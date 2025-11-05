@@ -4,14 +4,14 @@
 
 using namespace std;
 
-class DataBaseManager {
+class DatabaseManager {
 public:
-    DataBaseManager();
+    DatabaseManager();
     bool connect();
     vector<Student> getStudents();
-    vector<Grade> getStudentsGrades(int student_id, int session_id);
-    Sudent getStudent(int student_id);
-
+    vector<Grade> getStudentGrades(int student_id, int session_id);
+    Student getStudent(int student_id);
+    
 private:
-    string connection_string = " ";
+    string connection_string = "";
 };
