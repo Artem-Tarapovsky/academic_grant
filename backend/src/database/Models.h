@@ -3,12 +3,12 @@
 #include <vector>
 #include "json.hpp"
 
-usung namespace std;
+using namespace std;
 using json = nlohmann::json;
 
 struct Student {
     int id;
-    srting full_name;
+    string full_name;
     string student_group;
     int course_number;
     string education_type;
@@ -22,7 +22,7 @@ struct Student {
             {"course_number", course_number},
             {"education_type", education_type},
             {"social_category", social_category}
-        };   
+        };
     }
 };
 
@@ -34,6 +34,18 @@ struct Grade {
     string grade_value;
     string exam_date;
     string teacher_name;
+    
+    json to_json() const {
+        return {
+            {"id", id},
+            {"student_id", student_id},
+            {"subject_id", subject_id},
+            {"session_id", session_id},
+            {"grade_value", grade_value},
+            {"exam_date", exam_date},
+            {"teacher_name", teacher_name}
+        };
+    }
 };
 
 struct ScholarshipResult {
@@ -42,7 +54,7 @@ struct ScholarshipResult {
     double amount;
     string status;
     string message;
-
+    
     json to_json() const {
         return {
             {"student_id", student_id},
