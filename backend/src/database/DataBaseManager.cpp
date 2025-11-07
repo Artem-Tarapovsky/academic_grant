@@ -1,5 +1,5 @@
 #include "DatabaseManager.h"
-#include <pqxx>
+#include <pqxx/pqxx>
 #include <iostream>
 
 using namespace std;
@@ -72,7 +72,7 @@ vector<Grade> DatabaseManager::getStudentGrades(int student_id, int session_id) 
             grades.push_back(g);
         }
         
-        cout << "📝 Загружено оценок для студента " << student_id << ": " << grades.size() << endl;
+        cout << "Загружено оценок для студента " << student_id << ": " << grades.size() << endl;
         txn.commit();
         
     } catch (const exception& e) {

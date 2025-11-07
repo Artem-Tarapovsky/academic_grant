@@ -4,18 +4,20 @@ project(Academic_Grant)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#Библиотеки
-find_package(libpqxx REQUIRED)
+# Ручное указание путей для Homebrew на Apple Silicon
+set(LIBPQXX_INCLUDE_DIR "/opt/homebrew/include")
+set(LIBPQXX_LIB_DIR "/opt/homebrew/lib")
 
-#Пути
+# Явно указываем все нужные пути
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/database
     ${CMAKE_CURRENT_SOURCE_DIR}/src/core
+    ${LIBPQXX_INCLUDE_DIR}
 )
 
-#Исходные файлы
+# Исходные файлы
 set(SOURCES
     src/main.cpp
     src/database/DatabaseManager.cpp
@@ -25,7 +27,8 @@ set(SOURCES
 
 add_executable(academic_grant_backend ${SOURCES})
 
-#Подключение библиотек
-target_link_libraries(academic_grant_backend PRIVATE libpqxx)
+# Подключаем библиотеки
+target_link_directories(academic_grant_backend PRIVATE ${LIBPQXX_LIB_DIR})
+target_link_libraries(academic_grant_backend PRIVATE pqxx)
 
 target_compile_options(academic_grant_backend PRIVATE -O2 -Wall)

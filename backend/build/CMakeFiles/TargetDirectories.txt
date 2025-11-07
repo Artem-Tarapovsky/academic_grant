@@ -1,0 +1,3 @@
+/Users/artem_tarapovsky/Desktop/academic_grant/backend/build/CMakeFiles/academic_grant_backend.dir
+/Users/artem_tarapovsky/Desktop/academic_grant/backend/build/CMakeFiles/edit_cache.dir
+/Users/artem_tarapovsky/Desktop/academic_grant/backend/build/CMakeFiles/rebuild_cache.dir
