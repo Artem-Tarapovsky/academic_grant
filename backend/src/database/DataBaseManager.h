@@ -11,6 +11,7 @@ public:
     vector<Student> getStudents();
     vector<Grade> getStudentGrades(int student_id, int session_id);
     Student getStudent(int student_id);
+    vector<ScholarshipRule> getScholarshipRules();
     
 private:
     string connection_string = "host=localhost port=5432 dbname=academic_grant_db user=academic_grant password=academic_grant";

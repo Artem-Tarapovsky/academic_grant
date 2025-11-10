@@ -8,6 +8,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(LIBPQXX_INCLUDE_DIR "/opt/homebrew/include")
 set(LIBPQXX_LIB_DIR "/opt/homebrew/lib")
 
+# Пути для nlohmann/json (если установлен через Homebrew)
+set(NLOHMANN_JSON_INCLUDE_DIR "/opt/homebrew/include")
+set(NLOHMANN_JSON_LIB_DIR "/opt/homebrew/lib")
+
 # Явно указываем все нужные пути
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -15,6 +19,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/database
     ${CMAKE_CURRENT_SOURCE_DIR}/src/core
     ${LIBPQXX_INCLUDE_DIR}
+    ${NLOHMANN_JSON_INCLUDE_DIR}
 )
 
 # Исходные файлы
@@ -28,7 +33,16 @@ set(SOURCES
 add_executable(academic_grant_backend ${SOURCES})
 
 # Подключаем библиотеки
-target_link_directories(academic_grant_backend PRIVATE ${LIBPQXX_LIB_DIR})
-target_link_libraries(academic_grant_backend PRIVATE pqxx)
+target_link_directories(academic_grant_backend PRIVATE 
+    ${LIBPQXX_LIB_DIR}
+    ${NLOHMANN_JSON_LIB_DIR}
+)
 
-target_compile_options(academic_grant_backend PRIVATE -O2 -Wall)
+target_link_libraries(academic_grant_backend PRIVATE 
+    pqxx
+)
+
+target_compile_options(academic_grant_backend PRIVATE 
+    -O2 
+    -Wall
+)

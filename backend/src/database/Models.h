@@ -12,7 +12,15 @@ struct Student {
     string student_group;
     int course_number;
     string education_type;
+    string education_level;
     string social_category;
+    int ege_score;
+    bool has_olympiad;
+    bool is_foreign;
+    bool has_disability_hearing;
+    bool has_disability_vision;
+    bool is_need_based;
+    bool regional_coefficient;
     
     json to_json() const {
         return {
@@ -21,7 +29,15 @@ struct Student {
             {"student_group", student_group},
             {"course_number", course_number},
             {"education_type", education_type},
-            {"social_category", social_category}
+            {"education_level", education_level},
+            {"social_category", social_category},
+            {"ege_score", ege_score},
+            {"has_olympiad", has_olympiad},
+            {"is_foreign", is_foreign},
+            {"has_disability_hearing", has_disability_hearing},
+            {"has_disability_vision", has_disability_vision},
+            {"is_need_based", is_need_based},
+            {"regional_coefficient", regional_coefficient}
         };
     }
 };
@@ -54,6 +70,7 @@ struct ScholarshipResult {
     double amount;
     string status;
     string message;
+    string rule_name;
     
     json to_json() const {
         return {
@@ -61,7 +78,29 @@ struct ScholarshipResult {
             {"scholarship_type", scholarship_type},
             {"amount", amount},
             {"status", status},
-            {"message", message}
+            {"message", message},
+            {"rule_name", rule_name}
         };
     }
+};
+
+struct ScholarshipRule {
+    int rule_id;
+    string rule_name;
+    string scholarship_type;
+    string education_level;
+    double min_average_grade;
+    int min_ege_score;
+    int max_ege_score;
+    string required_grade;
+    bool social_requirement;
+    bool requires_olympiad;
+    bool requires_foreign;
+    bool requires_disability;
+    bool requires_need_based;
+    bool is_first_course;
+    double amount_base;
+    double amount_regional;
+    int priority_level;
+    string description;
 };

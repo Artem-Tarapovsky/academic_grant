@@ -10,8 +10,11 @@ public:
     ScholarshipResult calculateForStudent(int student_id, int session_id);
     
 private:
-    const double BASIC_AMOUNT = 1000.0;
-    const double INCREASED_EXCELLENT = 5000.0;
-    const double SOCIAL_AMOUNT = 1500.0;
-    const double SOCIAL_INCREASED = 5500.0;
+    double calculateAverageGrade(const vector<Grade>& grades);
+    bool hasRequiredGrades(const vector<Grade>& grades, const string& required_grade);
+    bool hasLowGrades(const vector<Grade>& grades);
+    bool hasSocialCategory(const Student& student);
+    bool hasDisability(const Student& student);
+    double getScholarshipAmount(const ScholarshipRule& rule, bool has_regional_coefficient);
+    vector<ScholarshipRule> getApplicableRules(const Student& student, const vector<Grade>& grades, double average_grade);
 };

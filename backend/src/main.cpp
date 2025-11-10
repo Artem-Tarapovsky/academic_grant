@@ -1,5 +1,5 @@
 #include <iostream>
-#include "database/DatabaseManager.h"
+#include "database/DataBaseManager.h"
 #include "core/ScholarshipCalculator.h"
 
 using namespace std;
@@ -17,7 +17,7 @@ void demonstrateDatabaseConnection() {
 }
 
 void demonstrateStudents() {
-    cout << endl << "Загрзка данных студентов" << endl;
+    cout << endl << "Загрузка данных студентов" << endl;
     
     DatabaseManager db;
     auto students = db.getStudents();
@@ -29,14 +29,31 @@ void demonstrateStudents() {
         cout << " " << student.full_name << endl;
         cout << " Группа: " << student.student_group << endl;
         cout << " Курс: " << student.course_number << endl;
+        cout << " Уровень: " << student.education_level << endl;
         cout << " Форма обучения: " << student.education_type << endl;
         if (!student.social_category.empty()) {
             cout << " Соц. категория: " << student.social_category << endl;
         }
+        if (student.ege_score > 0) {
+            cout << " Баллы ЕГЭ: " << student.ege_score << endl;
+        }
+        if (student.has_olympiad) {
+            cout << " Победитель олимпиады" << endl;
+        }
+        if (student.is_foreign) {
+            cout << " Иностранный студент" << endl;
+        }
+        if (student.has_disability_hearing || student.has_disability_vision) {
+            cout << " Инвалидность: " << (student.has_disability_hearing ? "слух" : "зрение") << endl;
+        }
+        if (student.is_need_based) {
+            cout << " Нуждающийся студент" << endl;
+        }
+        cout << " Районный коэффициент: " << (student.regional_coefficient ? "да" : "нет") << endl;
         cout << endl;
     }
     
-    cout << "json формат данных:" << endl;
+    cout << "JSON формат данных:" << endl;
     cout << students_json.dump(2) << endl;
 }
 
@@ -55,44 +72,66 @@ void demonstrateScholarshipCalculation() {
         
         cout << " Студент ID: " << result.student_id << endl;
         cout << " Тип стипендии: " << result.scholarship_type << endl;
+        cout << " Правило: " << result.rule_name << endl;
         cout << " Сумма: " << result.amount << " руб." << endl;
         cout << " Статус: " << result.status << endl;
         cout << " Примечание: " << result.message << endl;
+        cout << endl;
     }
     
     cout << "Общая сумма к выплате: " << total_amount << " руб." << endl;
     
-    cout << endl << "оыщт формат результатов:" << endl;
+    cout << endl << "JSON формат результатов:" << endl;
     cout << results_json.dump(2) << endl;
 }
 
 void demonstrateGrades() {
-    cout << endl << "Загрзка оценок" << endl;
+    cout << endl << "Загрузка оценок" << endl;
     
     DatabaseManager db;
     
-    for (int student_id = 1; student_id <= 3; student_id++) {
+    for (int student_id = 1; student_id <= 6; student_id++) {
         auto grades = db.getStudentGrades(student_id, 1);
         if (!grades.empty()) {
             cout << "Оценки студента ID " << student_id << ":" << endl;
             
             json grades_json;
+            double sum = 0;
+            int count = 0;
+            
             for (const auto& grade : grades) {
                 grades_json["grades"].push_back(grade.to_json());
                 cout << "   - " << grade.grade_value << " (предмет " << grade.subject_id << ") - " << grade.teacher_name << endl;
+                
+                // Расчет среднего балла
+                if (grade.grade_value == "5" || grade.grade_value == "зачет") {
+                    sum += 5.0;
+                    count++;
+                } else if (grade.grade_value == "4") {
+                    sum += 4.0;
+                    count++;
+                } else if (grade.grade_value == "3") {
+                    sum += 3.0;
+                    count++;
+                }
             }
             
-            cout << "   json формат:" << endl;
+            if (count > 0) {
+                cout << "   Средний балл: " << (sum / count) << endl;
+            }
+            
+            cout << "   JSON формат:" << endl;
             cout << "   " << grades_json.dump(2) << endl << endl;
         }
     }
 }
 
 int main() {
-    cout << "ACADEMIC GRANT" << endl;
+    cout << "ACADEMIC GRANT - РАСШИРЕННАЯ ВЕРСИЯ" << endl;
     cout << "База данных: PostgreSQL" << endl;
     cout << "Библиотека: libpqxx" << endl;
     cout << "Формат данных: JSON" << endl;
+    cout << "Поддержка всех видов стипендий 2025/2026" << endl;
     cout << endl;
     
     demonstrateDatabaseConnection();
