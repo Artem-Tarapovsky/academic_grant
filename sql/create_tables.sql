@@ -94,3 +94,25 @@ CREATE TABLE scholarship_payments (
     payment_date TIMESTAMP,
     notes TEXT
 );
+
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'teacher', 'student')),
+    student_id INTEGER REFERENCES students(student_id) NULL,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP NULL
+);
+
+CREATE TABLE user_sessions (
+    session_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id),
+    session_token VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL,
+    is_active BOOLEAN DEFAULT true
+);

@@ -33,15 +33,12 @@ vector<Student> DatabaseManager::getStudents() {
         
         for (const auto& row : result) {
             Student s;
-            
-            // Обязательные поля
             s.id = row["student_id"].as<int>();
             s.full_name = row["full_name"].as<string>();
             s.student_group = row["student_group"].as<string>();
             s.course_number = row["course_number"].as<int>();
             s.education_type = row["education_type"].as<string>();
             
-            // Поля, которые могут быть NULL или пустыми
             string education_level = row["education_level"].as<string>();
             s.education_level = education_level.empty() ? "bachelor" : education_level;
             
@@ -54,7 +51,6 @@ vector<Student> DatabaseManager::getStudents() {
                 s.ege_score = 0;
             }
             
-            // Булевы поля
             s.has_olympiad = row["has_olympiad"].as<bool>();
             s.is_foreign = row["is_foreign"].as<bool>();
             s.has_disability_hearing = row["has_disability_hearing"].as<bool>();
@@ -255,4 +251,182 @@ vector<ScholarshipRule> DatabaseManager::getScholarshipRules() {
     }
     
     return rules;
+}
+
+User DatabaseManager::getUserByUsername(const string& username) {
+    User user;
+    
+    try {
+        pqxx::connection conn(connection_string);
+        pqxx::work txn(conn);
+        
+        string query = "SELECT user_id, username, password_hash, role, student_id, full_name, email, is_active "
+                      "FROM users WHERE username = '" + username + "'";
+        
+        pqxx::result result = txn.exec(query);
+        
+        if (!result.empty()) {
+            const auto& row = result[0];
+            user.user_id = row["user_id"].as<int>();
+            user.username = row["username"].as<string>();
+            user.password_hash = row["password_hash"].as<string>(); // Важно!
+            user.role = row["role"].as<string>();
+            
+            if (!row["student_id"].is_null()) {
+                user.student_id = row["student_id"].as<int>();
+            } else {
+                user.student_id = 0;
+            }
+            
+            user.full_name = row["full_name"].as<string>();
+            
+            if (!row["email"].is_null()) {
+                user.email = row["email"].as<string>();
+            } else {
+                user.email = "";
+            }
+            
+            user.is_active = row["is_active"].as<bool>();
+        }
+        
+        txn.commit();
+        
+    } catch (const exception& e) {
+        cout << "Ошибка при загрузке пользователя: " << e.what() << endl;
+    }
+    
+    return user;
+}
+
+bool DatabaseManager::verifyUserPassword(const string& username, const string& password) {
+    try {
+        pqxx::connection conn(connection_string);
+        pqxx::work txn(conn);
+        
+        string query = "SELECT password_hash FROM users WHERE username = '" + username + "' AND is_active = true";
+        pqxx::result result = txn.exec(query);
+        
+        if (!result.empty()) {
+            string stored_hash = result[0]["password_hash"].as<string>();
+            // В реальном приложении здесь должно быть хеширование и сравнение
+            return password == stored_hash;
+        }
+        
+        txn.commit();
+        
+    } catch (const exception& e) {
+        cout << "Ошибка при проверке пароля: " << e.what() << endl;
+    }
+    
+    return false;
+}
+
+vector<User> DatabaseManager::getAllUsers() {
+    vector<User> users;
+    
+    try {
+        pqxx::connection conn(connection_string);
+        pqxx::work txn(conn);
+        
+        string query = "SELECT user_id, username, role, student_id, full_name, email, is_active FROM users ORDER BY user_id";
+        pqxx::result result = txn.exec(query);
+        
+        for (const auto& row : result) {
+            User user;
+            user.user_id = row["user_id"].as<int>();
+            user.username = row["username"].as<string>();
+            user.role = row["role"].as<string>();
+            
+            if (!row["student_id"].is_null()) {
+                user.student_id = row["student_id"].as<int>();
+            } else {
+                user.student_id = 0;
+            }
+            
+            user.full_name = row["full_name"].as<string>();
+            
+            if (!row["email"].is_null()) {
+                user.email = row["email"].as<string>();
+            } else {
+                user.email = "";
+            }
+            
+            user.is_active = row["is_active"].as<bool>();
+            
+            users.push_back(user);
+        }
+        
+        cout << "Загружено пользователей: " << users.size() << endl;
+        txn.commit();
+        
+    } catch (const exception& e) {
+        cout << "Ошибка при загрузке пользователей: " << e.what() << endl;
+    }
+    
+    return users;
+}
+
+bool DatabaseManager::createUser(const User& user) {
+    try {
+        pqxx::connection conn(connection_string);
+        pqxx::work txn(conn);
+        
+        string query = "INSERT INTO users (username, password_hash, role, student_id, full_name, email, is_active) VALUES (" +
+                      txn.quote(user.username) + ", " +
+                      txn.quote(user.password_hash) + ", " +
+                      txn.quote(user.role) + ", " +
+                      (user.student_id > 0 ? to_string(user.student_id) : "NULL") + ", " +
+                      txn.quote(user.full_name) + ", " +
+                      txn.quote(user.email) + ", " +
+                      (user.is_active ? "true" : "false") + ")";
+        
+        txn.exec(query);
+        txn.commit();
+        return true;
+        
+    } catch (const exception& e) {
+        cout << "Ошибка при создании пользователя: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool DatabaseManager::updateUser(const User& user) {
+    try {
+        pqxx::connection conn(connection_string);
+        pqxx::work txn(conn);
+        
+        string query = "UPDATE users SET " 
+                      "username = " + txn.quote(user.username) + ", " +
+                      "password_hash = " + txn.quote(user.password_hash) + ", " +
+                      "role = " + txn.quote(user.role) + ", " +
+                      "student_id = " + (user.student_id > 0 ? to_string(user.student_id) : "NULL") + ", " +
+                      "full_name = " + txn.quote(user.full_name) + ", " +
+                      "email = " + txn.quote(user.email) + ", " +
+                      "is_active = " + (user.is_active ? "true" : "false") +
+                      " WHERE user_id = " + to_string(user.user_id);
+        
+        txn.exec(query);
+        txn.commit();
+        return true;
+        
+    } catch (const exception& e) {
+        cout << "Ошибка при обновлении пользователя: " << e.what() << endl;
+        return false;
+    }
+}
+
+bool DatabaseManager::deleteUser(int user_id) {
+    try {
+        pqxx::connection conn(connection_string);
+        pqxx::work txn(conn);
+        
+        string query = "DELETE FROM users WHERE user_id = " + to_string(user_id);
+        txn.exec(query);
+        txn.commit();
+        return true;
+        
+    } catch (const exception& e) {
+        cout << "Ошибка при удалении пользователя: " << e.what() << endl;
+        return false;
+    }
 }

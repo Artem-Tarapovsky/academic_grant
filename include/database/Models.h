@@ -105,3 +105,54 @@ struct ScholarshipRule {
     string description;
     bool is_active;
 };
+
+struct User {
+    int user_id;
+    string username;
+    string password_hash;
+    string role;
+    int student_id;
+    string full_name;
+    string email;
+    bool is_active;
+    
+    json to_json() const {
+        return {
+            {"user_id", user_id},
+            {"username", username},
+            {"role", role},
+            {"student_id", student_id},
+            {"full_name", full_name},
+            {"email", email},
+            {"is_active", is_active}
+        };
+    }
+};
+
+struct LoginRequest {
+    string username;
+    string password;
+    
+    json to_json() const {
+        return {
+            {"username", username},
+            {"password", password}
+        };
+    }
+};
+
+struct AuthResponse {
+    bool success;
+    string message;
+    string token;
+    User user;
+    
+    json to_json() const {
+        return {
+            {"success", success},
+            {"message", message},
+            {"token", token},
+            {"user", user.to_json()}
+        };
+    }
+};

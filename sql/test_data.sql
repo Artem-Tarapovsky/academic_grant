@@ -20,7 +20,16 @@ INSERT INTO academic_subjects (subject_name, semester_id, credits, is_required) 
 INSERT INTO exam_sessions (session_name, semester_id, session_type, start_date, end_date, is_completed) VALUES
 ('Зимняя сессия 2024-2025', 1, 'winter', '2024-12-09', '2025-01-25', true);
 
--- Оценки за зимнюю сессию (разные сценарии успеваемости)
+-- Студенты
+INSERT INTO students (full_name, student_group, course_number, education_type, education_level, social_category, ege_score, has_olympiad, is_foreign, has_disability_hearing, has_disability_vision, is_need_based, regional_coefficient) VALUES
+('Иванов Иван Иванович', 'БИ-201', 1, 'budget', 'bachelor', '', 270, false, false, false, false, false, true),
+('Петрова Мария Сергеевна', 'БИ-201', 1, 'budget', 'bachelor', 'сирота', 260, false, false, false, false, true, false),
+('Сидоров Алексей Петрович', 'БИ-201', 1, 'budget', 'bachelor', '', 240, false, false, false, false, false, true),
+('Козлова Анна Дмитриевна', 'БИ-301', 3, 'budget', 'bachelor', '', 0, false, false, false, false, false, false),
+('Николаев Денис Игоревич', 'МА-101', 1, 'budget', 'master', '', 0, false, false, false, false, false, true),
+('Федорова Елена Викторовна', 'БИ-201', 1, 'budget', 'bachelor', '', 255, false, false, true, false, false, false);
+
+-- Оценки за зимнюю сессию
 INSERT INTO student_grades (student_id, subject_id, session_id, grade_value, exam_date, teacher_name) VALUES
 -- Отличник бакалавриат
 (1, 1, 1, '5', '2024-12-15', 'Доцент Иванов'),
@@ -55,42 +64,27 @@ INSERT INTO student_grades (student_id, subject_id, session_id, grade_value, exa
 (6, 2, 1, '4', '2024-12-18', 'Доцент Петрова'),
 (6, 3, 1, '4', '2024-12-22', 'Старший преподаватель Сидоров');
 
--- Правила стипендий (полный перечень по новым требованиям)
+-- Правила стипендий (существующие правила)
 INSERT INTO scholarship_rules (rule_name, scholarship_type, education_level, min_average_grade, min_ege_score, max_ege_score, required_grade, social_requirement, requires_olympiad, requires_foreign, requires_disability, requires_need_based, is_first_course, amount_base, amount_regional, priority_level, description) VALUES
--- БАКАЛАВРИАТ/СПЕЦИАЛИТЕТ - Государственная академическая
 ('Бак_1курс_базовая', 'академическая', 'bachelor', NULL, NULL, NULL, NULL, false, false, false, false, false, true, 4712, 5654, 1, 'Первый курс (первый семестр)'),
 ('Бак_хорошо', 'академическая', 'bachelor', 4.0, NULL, NULL, '4', false, false, false, false, false, false, 4712, 5654, 2, 'Учащимся на "хорошо"'),
 ('Бак_отл_хор', 'академическая', 'bachelor', 4.5, NULL, NULL, NULL, false, false, false, false, false, false, 5397, 6476, 3, 'Учащимся на "отлично" и "хорошо"'),
 ('Бак_отлично', 'академическая', 'bachelor', 4.75, NULL, NULL, '5', false, false, false, false, false, false, 5842, 7010, 4, 'Учащимся на "отлично"'),
-
--- Повышенная для первокурсников по ЕГЭ
 ('Бак_ЕГЭ_255', 'академическая', 'bachelor', NULL, 0, 254, NULL, false, false, false, false, false, true, 4712, 5654, 5, 'ЕГЭ < 255 баллов'),
 ('Бак_ЕГЭ_255_275', 'академическая', 'bachelor', NULL, 255, 275, NULL, false, false, false, false, false, true, 10000, 10000, 6, 'ЕГЭ 255-275 баллов'),
 ('Бак_ЕГЭ_276_300', 'академическая', 'bachelor', NULL, 276, 300, NULL, false, false, false, false, false, true, 12500, 12500, 7, 'ЕГЭ 276-300 баллов'),
 ('Бак_олимпиада', 'академическая', 'bachelor', NULL, NULL, NULL, NULL, false, true, false, false, false, true, 22500, 22500, 8, 'Победители олимпиад'),
-
--- МАГИСТРАТУРА
 ('Маг_1курс', 'академическая', 'master', NULL, NULL, NULL, NULL, false, false, false, false, false, true, 5842, 7010, 9, 'Магистратура 1 курс'),
 ('Маг_хорошо', 'академическая', 'master', 4.0, NULL, NULL, '4', false, false, false, false, false, false, 5842, 7010, 10, 'Магистратура на "хорошо"'),
 ('Маг_отл_хор', 'академическая', 'master', 4.5, NULL, NULL, NULL, false, false, false, false, false, false, 6677, 8012, 11, 'Магистратура на "отлично" и "хорошо"'),
 ('Маг_отлично', 'академическая', 'master', 4.75, NULL, NULL, '5', false, false, false, false, false, false, 6982, 8378, 12, 'Магистратура на "отлично"'),
-
--- АСПИРАНТУРА
-('Асп_гуманитар', 'академическая', 'postgraduate', NULL, NULL, NULL, NULL, false, false, false, false, false, false, 11979, 14375, 13, 'Аспирантура гуманитарная'),
-('Асп_техническая', 'академическая', 'postgraduate', NULL, NULL, NULL, NULL, false, false, false, false, false, false, 16503, 19804, 14, 'Аспирантура техническая'),
-
--- СПО
-('СПО_1курс', 'академическая', 'secondary', NULL, NULL, NULL, NULL, false, false, false, false, false, true, 1457, 1748, 15, 'СПО 1 курс'),
-('СПО_хорошо', 'академическая', 'secondary', 4.0, NULL, NULL, '4', false, false, false, false, false, false, 1457, 1748, 16, 'СПО на "хорошо"'),
-('СПО_отл_хор', 'академическая', 'secondary', 4.5, NULL, NULL, NULL, false, false, false, false, false, false, 1652, 1982, 17, 'СПО на "отлично" и "хорошо"'),
-('СПО_отлично', 'академическая', 'secondary', 4.75, NULL, NULL, '5', false, false, false, false, false, false, 1792, 2150, 18, 'СПО на "отлично"'),
-
--- СОЦИАЛЬНЫЕ СТИПЕНДИИ
 ('Соц_высшее', 'социальная', NULL, NULL, NULL, NULL, NULL, true, false, false, false, false, false, 7061, 8473, 19, 'Социальная стипендия высшее образование'),
-('Соц_СПО', 'социальная', 'secondary', NULL, NULL, NULL, NULL, true, false, false, false, false, false, 2171, 2605, 20, 'Социальная стипендия СПО'),
-('Соц_повыш_1_2курс', 'социальная', NULL, NULL, NULL, NULL, NULL, true, false, false, false, true, false, 15473, 15473, 21, 'Социальная повышенная для нуждающихся 1-2 курс'),
+('Соц_повыш_1_2курс', 'социальная', NULL, NULL, NULL, NULL, NULL, true, false, false, false, true, false, 15473, 15473, 21, 'Социальная повышенная для нуждающихся 1-2 курс');
 
--- ИНОСТРАННЫЕ СТУДЕНТЫ
-('Иностр_высшее', 'иностранная', NULL, NULL, NULL, NULL, NULL, false, false, true, false, false, false, 2224, 2669, 22, 'Иностранные студенты высшее образование'),
-('Иностр_асп_гуманитар', 'иностранная', 'postgraduate', NULL, NULL, NULL, NULL, false, false, true, false, false, false, 4380, 5256, 23, 'Иностранные аспиранты гуманитарные'),
-('Иностр_асп_технич', 'иностранная', 'postgraduate', NULL, NULL, NULL, NULL, false, false, true, false, false, false, 10513, 12616, 24, 'Иностранные аспиранты технические');
+-- Пользователи
+INSERT INTO users (username, password_hash, role, student_id, full_name, email, is_active) VALUES
+('admin', 'admin123', 'admin', NULL, 'Администратор Системы', 'admin@university.ru', true),
+('teacher', 'teacher123', 'teacher', NULL, 'Преподаватель Иванов', 'teacher@university.ru', true),
+('student1', 'student123', 'student', 1, 'Иванов Иван Иванович', 'student1@university.ru', true),
+('student2', 'student123', 'student', 2, 'Петрова Мария Сергеевна', 'student2@university.ru', true),
+('student3', 'student123', 'student', 3, 'Сидоров Алексей Петрович', 'student3@university.ru', true);
